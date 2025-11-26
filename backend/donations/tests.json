@@ -1,0 +1,20 @@
+{
+  "tests": [
+    {
+      "name": "Create donation",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "player_nickname": "TestPlayer",
+        "package_name": "VIP",
+        "amount": 299,
+        "phone": "+79179231812"
+      },
+      "expectedStatus": 201,
+      "expectedBody": {
+        "success": true
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

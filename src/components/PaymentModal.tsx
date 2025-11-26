@@ -7,6 +7,8 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import Icon from '@/components/ui/icon';
 import { useToast } from '@/hooks/use-toast';
 
@@ -21,6 +23,7 @@ export default function PaymentModal({ isOpen, onClose, packageName, amount }: P
   const { toast } = useToast();
   const [paymentData, setPaymentData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [playerNickname, setPlayerNickname] = useState('');
 
   useEffect(() => {
     if (isOpen) {
@@ -58,6 +61,41 @@ export default function PaymentModal({ isOpen, onClose, packageName, amount }: P
     }
   };
 
+  const handlePaymentSubmit = async () => {
+    if (!playerNickname.trim()) {
+      toast({
+        title: 'Укажи ник',
+        description: 'Введи свой игровой ник для активации привилегий',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    try {
+      await fetch('https://functions.poehali.dev/1b13b9ff-6438-4d87-9ef4-27f20404e0d2', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          player_nickname: playerNickname,
+          package_name: packageName,
+          amount: amount,
+          phone: paymentData?.phone || ''
+        }),
+      });
+
+      toast({
+        title: 'Заявка создана! 🎉',
+        description: 'После оплаты привилегии активируются автоматически',
+      });
+      
+      onClose();
+    } catch (error) {
+      console.error('Failed to create donation:', error);
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
@@ -77,6 +115,16 @@ export default function PaymentModal({ isOpen, onClose, packageName, amount }: P
           </div>
         ) : paymentData ? (
           <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="nickname">Твой игровой ник</Label>
+              <Input
+                id="nickname"
+                placeholder="Введи ник с сервера"
+                value={playerNickname}
+                onChange={(e) => setPlayerNickname(e.target.value)}
+              />
+            </div>
+
             <div className="bg-primary/10 rounded-lg p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
@@ -132,9 +180,9 @@ export default function PaymentModal({ isOpen, onClose, packageName, amount }: P
               </div>
             </div>
 
-            <Button className="w-full" onClick={onClose}>
+            <Button className="w-full" onClick={handlePaymentSubmit}>
               <Icon name="Check" size={18} />
-              Понятно, оплачу!
+              Подтвердить и оплатить
             </Button>
           </div>
         ) : (
