@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
 import { useToast } from '@/hooks/use-toast';
+import PaymentModal from '@/components/PaymentModal';
 
 const donationPackages = [
   {
@@ -78,6 +80,11 @@ const donationPackages = [
 export default function Index() {
   const { toast } = useToast();
   const serverIP = 'server-mc.work.gd:25590';
+  const [paymentModal, setPaymentModal] = useState<{isOpen: boolean; packageName: string; amount: number}>({
+    isOpen: false,
+    packageName: '',
+    amount: 0
+  });
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(serverIP);
@@ -161,6 +168,7 @@ export default function Index() {
                   <Button 
                     className="w-full font-bold text-base h-11"
                     variant={pkg.popular ? "default" : "outline"}
+                    onClick={() => setPaymentModal({ isOpen: true, packageName: pkg.name, amount: pkg.price })}
                   >
                     <Icon name="ShoppingCart" size={18} />
                     Купить
@@ -216,6 +224,13 @@ export default function Index() {
           </p>
         </div>
       </footer>
+
+      <PaymentModal
+        isOpen={paymentModal.isOpen}
+        onClose={() => setPaymentModal({ isOpen: false, packageName: '', amount: 0 })}
+        packageName={paymentModal.packageName}
+        amount={paymentModal.amount}
+      />
     </div>
   );
 }

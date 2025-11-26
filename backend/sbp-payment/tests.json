@@ -1,0 +1,17 @@
+{
+  "tests": [
+    {
+      "name": "Get payment data",
+      "method": "GET",
+      "path": "/?amount=299&package=VIP",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "phone": "+79179231812",
+        "bank": "string",
+        "amount": "string",
+        "package": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
